@@ -1,8 +1,7 @@
 #ifndef _BITFIELD_H_
 #define _BITFIELD_H_
 
-
-#include <stdint.h>
+#include <stdlib.h>
 
 struct struct_bitfield {
     uint64_t *p;
