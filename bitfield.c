@@ -52,12 +52,33 @@ void bitfield_unset_bit(bitfield *field, uint64_t bitPos) {
     printf("field after mask 0x%016llx\n", field->p[offset]);
 }
 
-bitfield* bitfield_new(uint64_t size) {
+uint64_t bitfield_next_free_bit(bitfield *field) {
+    uint64_t offset = 0;
+    uint64_t offPos = 0;
+    uint8_t  mask   = 1;
+
+    for(; offset < field->n; offset++) {
+        uint64_t data = field->p[offset];
+
+        for(offPos = 0; offPos < 64; offPos++) {
+            uint8_t res = mask & data;
+
+            if (res == 0) {
+                return offset * 64 + offPos;
+            }
+            data >>= 1;
+        }
+    }
+
+    return (mask-2); // 0xff...
+}
+
+bitfield* bitfield_new(uint64_t bytes) {
     bitfield *p = malloc(sizeof(bitfield));
 
-    p->n = size;
-    p->p = memalloc(size);
-    memset(p->p, 0, size);
+    p->n = bytes / 8;
+    p->p = memalloc(bytes);
+    memset(p->p, 0, bytes);
 
     return p;
 }
